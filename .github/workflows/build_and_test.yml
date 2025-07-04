@@ -1,0 +1,72 @@
+name: python-uv-devcontainer
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  lint_dockerfile:
+    name: Lint Dockerfile
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: .devcontainer/Dockerfile
+          ignore: DL3027 # Allow apt for end-user devcontainer
+
+  build_and_test:
+    needs: lint_dockerfile
+    name: Build & Test
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        ubuntu_version: ["22.04", "24.04"]
+        python_version: ["3.11", "3.12", "3.13"]
+    env:
+      IMAGE_NAME: python-uv-devcontainer:latest
+      PYTHON_VERSION: ${{ matrix.python_version }}
+    steps:
+      # Prerequisites
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python_version }}
+      
+      # Build
+      - name: Build Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .devcontainer/Dockerfile
+          load: true
+          push: false
+          tags: python-uv-devcontainer:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            UBUNTU_VERSION=${{ matrix.ubuntu_version }}
+            PYTHON_VERSION=${{ matrix.python_version }}
+
+      # Test
+      - name: Install Test Dependencies
+        run: pip install -r requirements.test.txt
+      - name: Run Tests
+        run: pytest .
