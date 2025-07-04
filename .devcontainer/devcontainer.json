@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+  "name": "python-uv",
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile",
+    "args": {
+      "PYTHON_VERSION": "3.13",
+      "UV_VERSION": "0.7.19"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "njpwerner.autodocstring",
+        "tamasfe.even-better-toml",
+        "aaron-bond.better-comments"
+      ]
+    }
+  },
+  "containerEnv": {
+    "UV_LINK_MODE": "copy"
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.histfile,target=/home/dev/.bash_history,type=bind",
+    "source=${localEnv:HOME}/.histfile,target=/home/dev/.zsh_history,type=bind",
+    "source=${localEnv:HOME}/.bash_aliases,target=/home/dev/.oh-my-zsh/custom/host_aliases.zsh,type=bind"
+  ]
+}
