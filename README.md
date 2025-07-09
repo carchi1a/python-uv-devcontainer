@@ -16,4 +16,19 @@ The options configured in [devcontainer.json](./.devcontainer/devcontainer.json)
 
 ### Local Environment Mirroring
 
-User-defined aliases and default HISTFILE are mounted to the devcontainer via zsh's and oh-my-zsh. 
+User-defined aliases and default HISTFILE are mounted to the devcontainer via zsh's and oh-my-zsh.
+
+## Local Build & Test
+
+To build locally, from the project's top level, run:
+```bash
+docker build -t python-uv-devcontainer:local --build-arg PYTHON_VERSION=3.13 -f .devcontainer/Dockerfile .
+```
+
+To test, run:
+```bash
+pip install -r requirements.test.txt
+export IMAGE_NAME="python-uv-devcontainer:local"
+export PYTHON_VERSION="3.13"
+pytest .
+```

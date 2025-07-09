@@ -11,6 +11,7 @@ ARG VENV_LOCATION=/opt/.venv
 FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
 
 FROM ubuntu:${UBUNTU_VERSION}
+
 # Remove default ubuntu user https://askubuntu.com/questions/1513927/ubuntu-24-04-docker-images-now-includes-user-ubuntu-with-uid-gid-1000
 RUN userdel -r ubuntu || echo "No ubuntu user to remove"
 
@@ -43,7 +44,7 @@ RUN groupadd --gid ${GID} ${USERNAME} \
   && echo "${USERNAME} ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME} \
   && chmod 0440 /etc/sudoers.d/${USERNAME} \
   && mkdir -p ${VENV_LOCATION} \
-  && chown -R ${GID}:${UID} ${VENV_LOCATION}/..
+  && chown -R ${GID}:${UID} ${VENV_LOCATION}
 
 # install & setup oh my zsh
 RUN su ${USERNAME} -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \

@@ -2,6 +2,13 @@ from os import getenv
 
 PYTHON_VERSION = getenv("PYTHON_VERSION", "")
 
+def test_user_configuration(host) -> None:
+    user = host.user("dev")
+    assert user.exists
+    assert "sudo" in user.groups
+    assert "/home/dev" == user.home
+    assert "/bin/zsh" == user.shell
+
 
 def test_uv_version(host) -> None:
     assert "0.7.19" in host.check_output("uv --version")
@@ -19,3 +26,11 @@ def test_venv_location(host) -> None:
 def test_venv_in_path(host) -> None:
     result = host.run("echo $PATH").stdout
     assert "/opt/.venv" in result
+
+
+def test_uv_init(host) -> None:
+    assert not host.file("/tmp/test_project/pyproject.toml").exists
+    
+    result = host.run("uv init /tmp/test_project")
+    assert result.rc == 0
+    assert host.file("/tmp/test_project/pyproject.toml").exists

@@ -2,10 +2,11 @@
   "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
   "name": "python-uv",
   "build": {
-    "context": "..",
+    "context": ".",
     "dockerfile": "Dockerfile",
     "args": {
       "PYTHON_VERSION": "3.13",
+      "UBUNTU_VERSION": "24.04",
       "UV_VERSION": "0.7.19"
     }
   },
@@ -26,6 +27,7 @@
   "mounts": [
     "source=${localEnv:HOME}/.histfile,target=/home/dev/.bash_history,type=bind",
     "source=${localEnv:HOME}/.histfile,target=/home/dev/.zsh_history,type=bind",
-    "source=${localEnv:HOME}/.bash_aliases,target=/home/dev/.oh-my-zsh/custom/host_aliases.zsh,type=bind"
+    "source=${localEnv:HOME}/.bash_aliases,target=/home/dev/.oh-my-zsh/custom/host_aliases.zsh,type=bind",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ]
 }
